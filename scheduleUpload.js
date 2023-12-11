@@ -6,3 +6,5 @@ router.post('/', (req, res, next) => {
         message: 'Handling POST requests to /scheduleUpload'
     });
 });
+
+module.exports = router;
