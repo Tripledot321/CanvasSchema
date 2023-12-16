@@ -1,5 +1,5 @@
 
-/* test data som körts i postman, (grupp 3 WS-REST 17 gruppen.) Funkar även med flera lektioner i en array
+/* test data som körts i postman, (grupp 3 WS-REST 17 gruppen.) Funkar även med flera lektioner i en array,
 {
     "context_code": "group_155510",
     "title": "Julafton",
@@ -17,7 +17,7 @@ const fetch = require('node-fetch');
 
 router.use(express.json());
 
-router.post('/saveSchema', async (req, res, next) => {
+router.post('/saveSchemaCanvas', async (req, res, next) => {
     try {
         let { body } = req;
 
