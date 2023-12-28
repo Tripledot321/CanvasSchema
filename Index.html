@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas schemauppladdning</title>
+</head>
+<body>
+
+    <form id="timeEdit">
+        <label for="websiteInput">Timeedit Länk:</label>
+        <input type="text" id="websiteInput" name="websiteInput" value="" required>
+        <button type="button" onclick="loadSchedule()">Läs in Schema:</button>
+        <button type="button" onclick="saveData()">Spara Data</button>
+    </form>
+
+    <div id="result"></div>
+
+<script>
+
+  async function loadSchedule() {
+    var url = document.getElementById('websiteInput').value;
+
+    try {
+      var response = await fetch(url);
+      var scheduleData = await response.json();
+      var reservations = scheduleData.reservations;
+
+      // Create HTML table
+      var htmlTable = '<table border="1"><tr>';
+      var headerRow = '';
+
+      // Adjust column headers to the specified order
+      headerRow += '<th>Kurskod, Kursnamn</th>';
+      headerRow += '<th>Aktivitet</th>';
+      headerRow += '<th>startDateTime</th>';
+      headerRow += '<th>endDateTime</th>';
+      headerRow += '<th>Plats, Lokal</th>';
+      headerRow += '<th colspan="3">Detaljer</th>';
+
+      htmlTable += headerRow + '</tr>';
+
+      // Create rows for each reservation
+      for (var i = 0; i < reservations.length; i++) {
+        var reservation = reservations[i];
+        var description = '<textarea id="description_' + i + '" name="description_' + i + '" rows="3" cols="90"></textarea>';
+
+        var row = '';
+
+        row += '<td>' + reservation['columns'][7] + '</td>'; // Kurskod, Kursnamn
+        row += '<td><input type="text" id="aktivitet_' + i + '" name="aktivitet_' + i + '" value="' + reservation['columns'][1] + '"></td>'; // Aktivitet
+        row += '<td>' + reservation['startdate'] + ' ' + reservation['starttime'] + '</td>'; // startDateTime
+        row += '<td>' + reservation['enddate'] + ' ' + reservation['endtime'] + '</td>'; // endDateTime
+        row += '<td>' + reservation['columns'][2] + '</td>'; // Plats, Lokal
+
+        row += '<td colspan="3">' + description + '</td>';
+        htmlTable += '<tr>' + row + '</tr>';
+      }
+
+      htmlTable += '</table>';
+
+      // Display the HTML table
+      document.getElementById('result').innerHTML = htmlTable;
+    } catch (error) {
+      // Handle errors
+      alert('Error fetching or parsing JSON: ' + error.message);
+    }
+  }
+
+  function saveData() {
+    var data = [];
+
+    // Loop through rows and collect data
+    var table = document.querySelector('table');
+    var rows = table.querySelectorAll('tr');
+
+    for (var i = 1; i < rows.length; i++) { // Start from 1 to skip header row
+      var cells = rows[i].querySelectorAll('td');
+      var aktivitet = document.getElementById('aktivitet_' + (i - 1)).value;
+      var startDateTime = cells[2].textContent;
+      var endDateTime = cells[3].textContent;
+      var platsLokal = cells[4].textContent;
+      var detaljer = document.getElementById('description_' + (i - 1)).value;
+
+      data.push({
+        context_code: "group_155510",
+        title: aktivitet,
+        location_name: platsLokal,
+        description: detaljer,
+        start_at: startDateTime,
+        end_at: endDateTime,
+        token: "3755~dUCiGlfsC3tsm8yDBBeqcXBbzjLYWxNFO5aDUZN6T9YGZ9tW7f23J4MriNijqQ3q"
+      });
+    }
+
+    // Log the data to console (you can send it to your server from here)
+    console.log(JSON.stringify(data));
+  }
+</script>
+
+</body>
+</html>
