@@ -49,8 +49,8 @@
 
         row += '<td>' + reservation['columns'][7] + '</td>'; // Kurskod, Kursnamn
         row += '<td><input type="text" id="aktivitet_' + i + '" name="aktivitet_' + i + '" value="' + reservation['columns'][1] + '"></td>'; // Aktivitet
-        row += '<td>' + reservation['startdate'] + ' ' + reservation['starttime'] + '</td>'; // startDateTime
-        row += '<td>' + reservation['enddate'] + ' ' + reservation['endtime'] + '</td>'; // endDateTime
+        row += '<td>' + reservation['startdate'] + 'T' + reservation['starttime'] + '</td>'; // startDateTime
+        row += '<td>' + reservation['enddate'] + 'T' + reservation['endtime'] + '</td>'; // endDateTime
         row += '<td>' + reservation['columns'][2] + '</td>'; // Plats, Lokal
 
         row += '<td colspan="3">' + description + '</td>';
@@ -85,8 +85,8 @@
         title: aktivitet,
         location_name: platsLokal,
         description: detaljer,
-        start_at: startDateTime,
-        end_at: endDateTime,
+        start_at: startDateTime + ':00Z',
+        end_at: endDateTime + ':00Z',
         token: "3755~dUCiGlfsC3tsm8yDBBeqcXBbzjLYWxNFO5aDUZN6T9YGZ9tW7f23J4MriNijqQ3q"
       });
     }
