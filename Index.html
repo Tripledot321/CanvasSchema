@@ -3,69 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canvas schemauppladdning</title>
+    <title>Canvas Schemauppladdning</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        textarea {
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
 
-    <form id="timeEdit">
-        <label for="websiteInput">Timeedit Länk:</label>
-        <input type="text" id="websiteInput" name="websiteInput" value="" required>
-        <button type="button" onclick="loadSchedule()">Läs in Schema:</button>
-        <button type="button" onclick="saveData()">Spara Data</button>
-    </form>
+  <div class="container">
+      <form id="timeEdit">
+          <div class="form-group">
+              <label for="websiteInput">Timeedit Länk:</label>
+              <input type="text" class="form-control" id="websiteInput" name="websiteInput" value="" required>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="loadSchedule()">Läs in Schema</button>
+          <button type="button" class="btn btn-success" onclick="saveData()">Spara Data</button>
+      </form>
 
-    <div id="result"></div>
+      <div id="result"></div>
+  </div>
 
-<script>
+  
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-  async function loadSchedule() {
-    var url = document.getElementById('websiteInput').value;
+  <script>
+
+
+async function loadSchedule() {
+    var url = $('#websiteInput').val();
 
     try {
-      var response = await fetch(url);
-      var scheduleData = await response.json();
-      var reservations = scheduleData.reservations;
+        var response = await fetch(url);
+        var scheduleData = await response.json();
+        var reservations = scheduleData.reservations;
 
-      // Create HTML table
-      var htmlTable = '<table border="1"><tr>';
-      var headerRow = '';
+        // UI using jQuery
+        var $result = $('#result');
+        $result.empty();
 
-      // Adjust column headers to the specified order
-      headerRow += '<th>Kurskod, Kursnamn</th>';
-      headerRow += '<th>Aktivitet</th>';
-      headerRow += '<th>startDateTime</th>';
-      headerRow += '<th>endDateTime</th>';
-      headerRow += '<th>Plats, Lokal</th>';
-      headerRow += '<th colspan="3">Detaljer</th>';
+        // Create and append the HTML table
+        var $table = $('<table class="table table-bordered"></table>');
+        var $headerRow = $('<tr><th>Kurskod, Kursnamn</th><th>Aktivitet</th><th>startDateTime</th><th>endDateTime</th><th>Plats, Lokal</th><th colspan="3">Detaljer</th></tr>');
+        $table.append($headerRow);
 
-      htmlTable += headerRow + '</tr>';
+        reservations.forEach((reservation, i) => {
+            var description = '<textarea id="description_' + i + '" name="description_' + i + '" rows="3" cols="90"></textarea>';
 
-      // Create rows for each reservation
-      for (var i = 0; i < reservations.length; i++) {
-        var reservation = reservations[i];
-        var description = '<textarea id="description_' + i + '" name="description_' + i + '" rows="3" cols="90"></textarea>';
+            var row = '';
+            row += '<td>' + reservation['columns'][7] + '</td>'; // Kurskod, Kursnamn
+            row += '<td><input type="text" id="aktivitet_' + i + '" name="aktivitet_' + i + '" value="' + reservation['columns'][1] + '"></td>'; // Aktivitet
+            row += '<td>' + reservation['startdate'] + 'T' + reservation['starttime'] + '</td>'; // startDateTime
+            row += '<td>' + reservation['enddate'] + 'T' + reservation['endtime'] + '</td>'; // endDateTime
+            row += '<td>' + reservation['columns'][2] + '</td>'; // Plats, Lokal
+            row += '<td colspan="3">' + description + '</td>';
 
-        var row = '';
+            $table.append($('<tr>' + row + '</tr>'));
+        });
 
-        row += '<td>' + reservation['columns'][7] + '</td>'; // Kurskod, Kursnamn
-        row += '<td><input type="text" id="aktivitet_' + i + '" name="aktivitet_' + i + '" value="' + reservation['columns'][1] + '"></td>'; // Aktivitet
-        row += '<td>' + reservation['startdate'] + 'T' + reservation['starttime'] + '</td>'; // startDateTime
-        row += '<td>' + reservation['enddate'] + 'T' + reservation['endtime'] + '</td>'; // endDateTime
-        row += '<td>' + reservation['columns'][2] + '</td>'; // Plats, Lokal
-
-        row += '<td colspan="3">' + description + '</td>';
-        htmlTable += '<tr>' + row + '</tr>';
-      }
-
-      htmlTable += '</table>';
-
-      // Display the HTML table
-      document.getElementById('result').innerHTML = htmlTable;
+        $result.append($table);
     } catch (error) {
-      alert('Länken går ej att läsas: ' + error.message);
+        alert('Länken går ej att läsas: ' + error.message);
     }
-  }
-
+}
   function saveData() {
     var data = [];
 
@@ -75,7 +92,7 @@
     for (var i = 1; i < rows.length; i++) {
       var cells = rows[i].querySelectorAll('td');
       var aktivitet = document.getElementById('aktivitet_' + (i - 1)).value;
-      var startDateTime = cells[2].textContent;
+      var Start = cells[2].textContent;
       var endDateTime = cells[3].textContent;
       var platsLokal = cells[4].textContent;
       var detaljer = document.getElementById('description_' + (i - 1)).value;
