@@ -69,9 +69,21 @@
   function saveData() {
     var data = [];
 
+    var storedToken = getToken();
+
+    if (!storedToken) {
+    var inputToken = prompt('Skriv in din token:');
+    if (inputToken) {
+      setToken(inputToken);
+      storedToken = inputToken;
+    } else {
+      alert('Du behöver skriva in din Token för att skicka schema till canvas!.');
+      return;
+    }
+  }
+    
     var table = document.querySelector('table');
     var rows = table.querySelectorAll('tr');
-
     for (var i = 1; i < rows.length; i++) {
       var cells = rows[i].querySelectorAll('td');
       var aktivitet = document.getElementById('aktivitet_' + (i - 1)).value;
@@ -85,14 +97,44 @@
         title: aktivitet,
         location_name: platsLokal,
         description: detaljer,
-        start_at: startDateTime + ':00Z',
+        start_at: startDateTime  + ':00Z',
         end_at: endDateTime + ':00Z',
-        token: "3755~dUCiGlfsC3tsm8yDBBeqcXBbzjLYWxNFO5aDUZN6T9YGZ9tW7f23J4MriNijqQ3q"
+        token: getToken()
       });
     }
-
+    
     console.log(JSON.stringify(data));
-  }
+    fetch('http://localhost:3000/scheduleUpload/saveSchemaCanvas', {
+    method: 'POST',
+    headers: {
+            'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error('Network response was not ok.');
+    })
+    .then(responseData => {
+      console.log('Response:', responseData);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+
+
+function setToken(token) {
+  sessionStorage.setItem('Token', token);
+}
+
+function getToken() {
+  return sessionStorage.getItem('Token');
+}
+
+
 </script>
 
 </body>
