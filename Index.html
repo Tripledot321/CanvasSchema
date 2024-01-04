@@ -110,12 +110,12 @@ async function loadSchedule() {
       var detaljer = document.getElementById('description_' + (i - 1)).value;
 
       data.push({
-        context_code: "group_155510",
+        context_code: "group_157006",
         title: aktivitet,
         location_name: platsLokal,
         description: detaljer,
-        start_at: startDateTime  + ':00Z',
-        end_at: endDateTime + ':00Z',
+        start_at: startDateTime  + ':00',
+        end_at: endDateTime + ':00',
         token: getToken()
       });
     }
