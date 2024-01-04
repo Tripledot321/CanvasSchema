@@ -94,7 +94,7 @@ async function loadSchedule() {
       setToken(inputToken);
       storedToken = inputToken;
     } else {
-      alert('Du behöver skriva in din Token för att skicka schema till canvas!.');
+      alert('Du behöver skriva in din Token för att skicka schema till canvas!');
       return;
     }
   }
@@ -104,7 +104,7 @@ async function loadSchedule() {
     for (var i = 1; i < rows.length; i++) {
       var cells = rows[i].querySelectorAll('td');
       var aktivitet = document.getElementById('aktivitet_' + (i - 1)).value;
-      var Start = cells[2].textContent;
+      var startDateTime = cells[2].textContent;
       var endDateTime = cells[3].textContent;
       var platsLokal = cells[4].textContent;
       var detaljer = document.getElementById('description_' + (i - 1)).value;
